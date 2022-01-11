@@ -129,4 +129,16 @@ class testAddLast {
 		assertNotEquals("B", L.getFirst()); // test 4
 	}
 
+	@Test
+	void testGetLength() {
+		LinkedList<String> L = new LinkedList<>();
+		L.addFirst("A");
+		assertEquals(1, L.getLength());
+		L.removeFirst();
+		assertEquals(0, L.getLength());
+		L.addFirst("A");
+		L.addFirst("A");
+		assertEquals(2, L.getLength());
+	}
+
 }
