@@ -53,9 +53,12 @@ public class LinkedList<T> {
 
 		this();
 
-		for (int i = 0; i < array.length; i++) {
-			this.addLast(array[i]);
+		if (array != null) {
+			for (int i = 0; i < array.length; i++) {
+				this.addLast(array[i]);
+			}
 		}
+
 	}
 
 	/**
