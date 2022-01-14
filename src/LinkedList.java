@@ -4,8 +4,6 @@
  * @author Sam Yadav
 */
 
-// HELlllllllOlOOO
-
 import java.util.NoSuchElementException;
 
 public class LinkedList<T> {
@@ -50,10 +48,10 @@ public class LinkedList<T> {
 
 	public LinkedList(T[] array) {
 		// should handle "null" Object case, make a new empty linked list
-
 		this();
-
-		if (array != null) {
+		if (array == null) {
+			return;
+		} else {
 			for (int i = 0; i < array.length; i++) {
 				this.addLast(array[i]);
 			}
@@ -65,11 +63,26 @@ public class LinkedList<T> {
 	 * Instantiates a new LinkedList by copying another List
 	 * 
 	 * @param original the LinkedList to copy
-	 * @postcondition a new List object, which is an identical, but separate, copy
-	 *                of the LinkedList original
+	 * @postcondition a new List object, which is an identical,
+	 *                but separate, copy of the LinkedList original
 	 */
 	public LinkedList(LinkedList<T> original) {
-
+		if (original == null) {
+			return;
+		}
+		if (original.length == 0) {
+			length = 0;
+			first = null;
+			last = null;
+			iterator = null;
+		} else {
+			Node temp = original.first;
+			while (temp != null) {
+				addLast(temp.data);
+				temp = temp.next;
+			}
+			iterator = null;
+		}
 	}
 
 	/**** ACCESSORS ****/
@@ -110,11 +123,15 @@ public class LinkedList<T> {
 	/**
 	 * Returns the data stored in the iterator node
 	 * 
-	 * @precondition <fill in here>
-	 * @throw NullPointerException <fill in here>
+	 * @precondition iterator != null
+	 * @throw NullPointerException when iterator == null
 	 */
 	public T getIterator() throws NullPointerException {
-		return null;
+		if (this.iterator == null) {
+			throw new NoSuchElementException("getIterator(): Cannot return null iterator.");
+		}
+
+		return this.iterator.data;
 	}
 
 	/**
@@ -141,7 +158,7 @@ public class LinkedList<T> {
 	 * @return whether the iterator is null
 	 */
 	public boolean offEnd() {
-		return false;
+		return (this.iterator == null);
 	}
 
 	/**** MUTATORS ****/
@@ -183,13 +200,23 @@ public class LinkedList<T> {
 
 	/**
 	 * Inserts a new element after the iterator
+	 * edge cases: iterator == last
 	 * 
 	 * @param data the data to insert
-	 * @precondition <fill in here>
-	 * @throws NullPointerException <fill in here>
+	 * @precondition iterator != null
+	 * @throws NullPointerException when iterate == null
 	 */
 	public void addIterator(T data) throws NullPointerException {
-		return;
+		if (this.iterator == null) {
+			throw new NullPointerException("addIterator(): Cannot add in front of null!");
+		} else if (this.iterator == this.last) {
+			this.addLast(data);
+		} else {
+			this.iterator.next.prev = new Node(data);
+			this.iterator.next.prev.next = this.iterator.next;
+			this.iterator.next = this.iterator.next.prev;
+			this.iterator.next.prev = this.iterator;
+		}
 	}
 
 	/**
@@ -204,11 +231,16 @@ public class LinkedList<T> {
 			throw new NoSuchElementException("removeFirst(): Cannot remove from an empty List!");
 		} else if (length == 1) {
 			first = last = null;
+			this.iterator = null;
 		} // case where there's only one length
 		else {
+			if (this.iterator == first) {
+				this.iterator = null;
+			}
 			this.first = this.first.next;
-			// Node temp=first; temp=temp.next;
+			this.first.prev = null; // disconnect from the old first node
 		}
+
 		length--;
 	}
 
@@ -224,56 +256,88 @@ public class LinkedList<T> {
 			throw new NoSuchElementException("removeFirst(): Cannot remove from an empty List!");
 		} else if (length == 1) {
 			first = last = null;
+			this.iterator = null;
 		} // case where there's only one length
 		else {
-//      this.last.prev.next = null; //removes the forward link from 2nd last to last
+			// this.last.prev.next = null; //removes the forward link from 2nd last to last
+			if (this.iterator == last) {
+				this.iterator = null;
+			}
 			this.last = this.last.prev;
+			this.last.next = null; // disconnect from the old last node
 		}
 		length--;
 	}
 
 	/**
 	 * removes the element referenced by the iterator
+	 * edge cases: iterator == last, iterator == first
 	 * 
-	 * @precondition <fill in here>
-	 * @postcondition <fill in here>
-	 * @throws NullPointerException <fill in here>
+	 * @precondition Iterator cannot be null
+	 * @postcondition The node referenced by iterator will be removed
+	 * @throws NullPointerException when iterator is null
 	 */
 	public void removeIterator() throws NullPointerException {
-
+		if (this.iterator == null) {
+			throw new NullPointerException("removeIterator(): Cannot remove from a null iterator.");
+		}
+		if (this.iterator == first) {
+			this.removeFirst();
+		} else if (this.iterator == last) {
+			this.removeLast();
+		} else {
+			this.iterator.prev.next = this.iterator.next;
+			this.iterator.next.prev = this.iterator.prev;
+		}
+		this.iterator = null;
 	}
 
 	/**
 	 * places the iterator at the first node
 	 * 
-	 * @precondition <fill in here>
-	 * @postcondition <fill in here>
-	 * @throws NullPointerException <fill in here>
+	 * @precondition length != 0
+	 * @postcondition iterator placed on first node
+	 * @throws NullPointerException when length = 0
 	 */
-	public void positionIterator() {
+	public void positionIterator() throws NullPointerException {
+		if (this.length == 0) {
+			throw new NullPointerException("positionIterator(): Cannot position onto empty list.");
+		}
 
+		this.iterator = this.first;
 	}
 
 	/**
 	 * Moves the iterator one node towards the last
-	 * 
-	 * @precondition <fill in here>
-	 * @postcondition <fill in here>
-	 * @throws NullPointerException <fill in here>
+	 *
+	 * @precondition iterator!=null
+	 * @postcondition iterator moves one node towards the end
+	 * @throws NullPointerException when iterator=null
 	 */
 	public void advanceIterator() throws NullPointerException {
-
+		if (this.iterator == null) {
+			throw new NullPointerException("advanceIterator(): Cannot advance a null iterator!");
+		} else {
+			this.iterator = this.iterator.next;
+		}
 	}
 
 	/**
 	 * Moves the iterator one node towards the first
+	 * edge case: when iterator is on first
 	 * 
-	 * @precondition <fill in here>
-	 * @postcondition <fill in here>
-	 * @throws NullPointerException <fill in here>
+	 * @precondition iterator!=null
+	 * @postcondition iterator moves one node towards the beginning
+	 * @throws NullPointerException when iterator=null
 	 */
 	public void reverseIterator() throws NullPointerException {
-
+		if (this.iterator == null) {
+			throw new NullPointerException("reverseIterator(): Cannot reverse a null iterator!");
+		} else if (this.iterator == first) {
+			this.iterator = this.last;
+		} else {
+			this.iterator = this.iterator.prev;
+		}
 	}
 
 	/**** ADDITIONAL OPERATIONS ****/
@@ -306,7 +370,28 @@ public class LinkedList<T> {
 	@SuppressWarnings("unchecked") // good practice to remove warning here
 	@Override
 	public boolean equals(Object o) {
-		return false;
+		if (!(o instanceof LinkedList)) { // checking that object is a linkedlist
+			return false;
+		}
+
+		LinkedList<T> obj = (LinkedList<T>) o; // letting the program know obj is linkedlist
+
+		if (this.length != obj.getLength()) { // checking if both lists have the same length
+			return false;
+		}
+
+		// Checking equality of each node
+		Node thisTemp = this.first;
+		Node listTemp = obj.first;
+		while (thisTemp != null && listTemp != null) {
+			if (thisTemp != listTemp) {
+				return false;
+			}
+			thisTemp = thisTemp.next;
+			listTemp = listTemp.next;
+		}
+
+		return true;
 	}
 
 	/** CHALLENGE METHODS */
@@ -322,7 +407,58 @@ public class LinkedList<T> {
 	 * @postcondition this and list are unchanged
 	 */
 	public LinkedList<T> zipperLists(LinkedList<T> list) {
-		return null;
+		LinkedList<T> l = new LinkedList<T>();
+
+		if (list.isEmpty() && this.isEmpty()) {
+			return l;
+		} else if (list.isEmpty()) {
+			return this;
+		} else if (this.isEmpty()) {
+			return list;
+		}
+
+		this.positionIterator();
+		list.positionIterator();
+
+		Node thisTemp = this.first;
+		Node listTemp = list.first;
+
+		if (this.getLength() > list.getLength()) {
+			while (listTemp != null) {
+				l.addLast(thisTemp.data);
+				l.addLast(listTemp.data);
+				thisTemp = thisTemp.next;
+				listTemp = listTemp.next;
+			}
+
+			while (thisTemp != null) {
+				l.addLast(thisTemp.data);
+				thisTemp = thisTemp.next;
+			}
+
+		} else if (this.getLength() < list.getLength()) {
+			while (thisTemp != null) {
+				l.addLast(thisTemp.data);
+				l.addLast(listTemp.data);
+				thisTemp = thisTemp.next;
+				listTemp = listTemp.next;
+			}
+
+			while (listTemp != null) {
+				l.addLast(listTemp.data);
+				listTemp = listTemp.next;
+			}
+		} else {
+			while (thisTemp != null) {
+				l.addLast(thisTemp.data);
+				l.addLast(listTemp.data);
+				thisTemp = thisTemp.next;
+				listTemp = listTemp.next;
+			}
+		}
+
+		return l;
+
 	}
 
 	/**
@@ -333,6 +469,15 @@ public class LinkedList<T> {
 	 * @return whether the list is reversible
 	 */
 	public boolean isReversible() {
-		return false;
+		// make a new list that reverses the values using addLast then use equals to
+		// compare the new list and the other
+		LinkedList<T> l = new LinkedList<T>();
+		Node thisTemp = this.first;
+		while (thisTemp != null) {
+			l.addFirst(thisTemp.data);
+			thisTemp = thisTemp.next;
+		}
+
+		return this.equals(l);
 	}
 }
