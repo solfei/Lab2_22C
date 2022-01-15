@@ -8,14 +8,14 @@ class testAddLast {
 
 	@Test
 	public void testAddLast() {
-		 LinkedList<Double> l = new LinkedList<>();
-		        l.addLast(3.5);
-		        assertEquals("3.5 \n", l.toString()); //test1
-		        l.addLast(4.9);
-		        assertEquals("3.5 4.9 \n", l.toString()); //test2
-		        //add a third test here - try calling getFirst
-		        assertEquals("4.9", l.getLast().toString());
-		}
+	 LinkedList<Double> l = new LinkedList<>();
+	        l.addLast(3.5);
+	        assertEquals("3.5 \n", l.toString()); //test1
+	        l.addLast(4.9);
+	        assertEquals("3.5 4.9 \n", l.toString()); //test2
+	        //add a third test here - try calling getFirst
+	        assertEquals("4.9", l.getLast().toString());
+	}
 	
 	@Test
 	public void testAddFirst() {
@@ -39,11 +39,11 @@ class testAddLast {
 	
 	@Test
 	public void testArrayConstructor() {
-	  //   LinkedList<String> tester = new LinkedList<>(new String[]{"hello", "world", "bye"});
+	     LinkedList<String> tester = new LinkedList<>(new String[]{"hello", "world", "bye"});
 	  
-	  // assertEquals("hello", tester.getFirst());
-	  // assertFalse(tester.isEmpty()); // test 2
-	  // assertTrue(tester.getLength()==3); 
+	   assertEquals("hello", tester.getFirst());
+	   assertFalse(tester.isEmpty()); // test 2
+	   assertTrue(tester.getLength()==3); 
 
 	}
 	
@@ -111,6 +111,67 @@ class testAddLast {
 		L.addFirst("A");
 		L.addFirst("A");
 		assertEquals(2, L.getLength());
+	}
+	
+	@Test
+	public void testReversible() {
+	   LinkedList<Integer> nums = new LinkedList<>();
+	        assertTrue(nums.isReversible());
+	        nums.addFirst(1);
+	        assertTrue(nums.isReversible());
+	        nums = new LinkedList<>(new Integer[] {1, 2, 3, 2, 1});
+	        assertTrue(nums.isReversible());
+	        nums.positionIterator();
+	        nums.advanceIterator();
+	        nums.addIterator(3);
+	        assertTrue(nums.isReversible());
+	        nums.advanceIterator();
+	        nums.addIterator(4);
+	        assertTrue(nums.isReversible());
+	        nums.addIterator(5);
+	        assertFalse(nums.isReversible());
+	        
+	        LinkedList<String> letters = new LinkedList<>(new String[] {"A", "B", "B", "A"});
+	        assertTrue(letters.isReversible());
+	        letters.addFirst(new String("D"));
+	        letters.addLast("D");
+	        assertTrue(letters.isReversible());
+	        letters.removeLast();
+	        assertFalse(letters.isReversible());
+
+	}
+	
+	@Test
+	public void testEquals() {
+		LinkedList<Integer> hello = new LinkedList<>(new Integer[] {0, 1,2});
+		LinkedList<Integer> hi = new LinkedList<>(new Integer[] {0,1,2});
+		assertTrue(hello.equals(hi));
+		assertTrue(hello.equals(hello));//
+		LinkedList<Integer> hahaha = new LinkedList<>(new Integer[] {0, 1, 1});
+		assertFalse(hello.equals(hahaha));
+		
+	}
+	
+	
+	@Test
+	public void testZipper() {
+	  LinkedList<String> nullList = new LinkedList<>();
+	        LinkedList<String> iList = new LinkedList<>();
+	        LinkedList<String> sList1 = new LinkedList<>(new String[] {"!", "?", "."});
+	        LinkedList<String> sList2 = new LinkedList<>(new String[] {"!", "?", ".", ","});
+	        
+	        assertEquals(sList1.zipperLists(nullList).toString(), sList1.toString());
+	        assertEquals(iList.zipperLists(sList1).toString(), sList1.toString());
+	        LinkedList<String> temp = sList1.zipperLists(sList2);
+	        assertEquals(sList1.toString(), "! ? . \n");
+	        assertEquals(sList2.toString(), "! ? . , \n");
+	        assertEquals(temp.toString(), "! ! ? ? . . , \n");
+	        
+	        temp = sList2.zipperLists(sList1);
+	        assertEquals(sList1.toString(), "! ? . \n");
+	        assertEquals(sList2.toString(), "! ? . , \n");
+	        assertEquals(temp.toString(), "! ! ? ? . . , \n");
+
 	}
 	
 	
