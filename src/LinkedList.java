@@ -217,6 +217,7 @@ public class LinkedList<T> {
 			this.iterator.next = this.iterator.next.prev;
 			this.iterator.next.prev = this.iterator;
 		}
+		length++;
 	}
 
 	/**
@@ -290,6 +291,8 @@ public class LinkedList<T> {
 			this.iterator.next.prev = this.iterator.prev;
 		}
 		this.iterator = null;
+
+		length--;
 	}
 
 	/**
@@ -370,6 +373,10 @@ public class LinkedList<T> {
 	@SuppressWarnings("unchecked") // good practice to remove warning here
 	@Override
 	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
 		if (!(o instanceof LinkedList)) { // checking that object is a linkedlist
 			return false;
 		}
@@ -384,7 +391,7 @@ public class LinkedList<T> {
 		Node thisTemp = this.first;
 		Node listTemp = obj.first;
 		while (thisTemp != null && listTemp != null) {
-			if (thisTemp != listTemp) {
+			if (!(thisTemp.data.equals(listTemp.data))) {
 				return false;
 			}
 			thisTemp = thisTemp.next;
@@ -417,44 +424,33 @@ public class LinkedList<T> {
 			return list;
 		}
 
-		this.positionIterator();
-		list.positionIterator();
-
 		Node thisTemp = this.first;
 		Node listTemp = list.first;
 
-		if (this.getLength() > list.getLength()) {
-			while (listTemp != null) {
-				l.addLast(thisTemp.data);
-				l.addLast(listTemp.data);
-				thisTemp = thisTemp.next;
-				listTemp = listTemp.next;
-			}
-
-			while (thisTemp != null) {
-				l.addLast(thisTemp.data);
-				thisTemp = thisTemp.next;
-			}
-
-		} else if (this.getLength() < list.getLength()) {
+		if (this.getLength() == list.getLength()) {
 			while (thisTemp != null) {
 				l.addLast(thisTemp.data);
 				l.addLast(listTemp.data);
 				thisTemp = thisTemp.next;
-				listTemp = listTemp.next;
-			}
-
-			while (listTemp != null) {
-				l.addLast(listTemp.data);
 				listTemp = listTemp.next;
 			}
 		} else {
-			while (thisTemp != null) {
+			Node temp3 = this.getLength() > list.getLength() ? list.first : this.first;
+			while (temp3 != null) {
 				l.addLast(thisTemp.data);
 				l.addLast(listTemp.data);
+				temp3 = temp3.next;
 				thisTemp = thisTemp.next;
 				listTemp = listTemp.next;
 			}
+
+			Node temp4 = this.getLength() > list.getLength() ? thisTemp : listTemp;
+
+			while (temp4 != null) {
+				l.addLast(temp4.data);
+				temp4 = temp4.next;
+			}
+
 		}
 
 		return l;
@@ -472,6 +468,11 @@ public class LinkedList<T> {
 		// make a new list that reverses the values using addLast then use equals to
 		// compare the new list and the other
 		LinkedList<T> l = new LinkedList<T>();
+
+		if (length == 1) {
+			return true;
+		}
+
 		Node thisTemp = this.first;
 		while (thisTemp != null) {
 			l.addFirst(thisTemp.data);
@@ -480,4 +481,5 @@ public class LinkedList<T> {
 
 		return this.equals(l);
 	}
+
 }
